@@ -8,6 +8,7 @@
    /* some common rules */
 DIGIT [0-9]
 CHAR  [a-z|A-Z]
+U     [_]
 
 %%
    /* specific lexer rules in regex */
@@ -59,10 +60,12 @@ CHAR  [a-z|A-Z]
 "]"   {printf("R_SQUARE_BRACKET\n"); currPos += yyleng;}
 ":="  {printf("ASSIGN\n"); currPos += yyleng;}
 {DIGIT}+          {printf("NUMBER %s\n", yytext); currPos += yyleng;}
+{CHAR}({CHAR}|{DIGIT})*(_({CHAR}|{DIGIT})*)*(_)+               {printf("Error at line %d, position %d: identifier \"%s\" cannot end with underscore\n", currLine, currPos, yytext); exit(0);}
 {CHAR}({CHAR}|{DIGIT})*(_({CHAR}|{DIGIT})*)*    {printf("IDENT %s\n", yytext); currPos += yyleng;}
 [ \t]+   {currPos += yyleng;}
 "\n"     {currLine++; currPos = 1;}
-##[^\n]* {currPos += yyleng;}  
+##[^\n]* {currPos += yyleng;}
+({U}|{DIGIT})+({CHAR}({CHAR}|{DIGIT})*(_({CHAR}|{DIGIT})*)*)+    {printf("Error at line %d, position %d: identifier \"%s\" must begin with a letter\n", currLine, currPos, yytext); exit(0);}
 .  {printf("Error at line %d, position %d: unrecognized symbol \"%s\"\n", currLine, currPos, yytext); exit(0);}
 %%
 	/* C functions used in lexer */
