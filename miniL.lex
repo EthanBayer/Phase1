@@ -63,6 +63,7 @@ CHAR  [a-z|A-Z]
 ":="  {printf(" ASSIGN "); }
 /* ---Identifiers and Numbers--- */
 {DIGIT}+          {printf("NUMBER %s\n", yytext); }
+{CHAR}({CHAR}|{DIGIT})*(_({CHAR}|{DIGIT})+)+    {printf("IDENT %s\n", yytext); }
 /* Invalid Symbol */
 .     {printf("ERROR, NOT RECOGNIZED SYMBOL\n"); exit(0);}
 %%
